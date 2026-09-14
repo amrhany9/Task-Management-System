@@ -9,8 +9,7 @@ import { TaskListComponent } from '../../tasks/task-list/task-list.component';
   selector: 'app-project-detail',
   standalone: true,
   imports: [FormsModule, RouterLink, TaskListComponent],
-  templateUrl: './project-detail.component.html',
-  styleUrl: './project-detail.component.css'
+  templateUrl: './project-detail.component.html'
 })
 export class ProjectDetailComponent implements OnInit {
   readonly project = signal<Project | null>(null);

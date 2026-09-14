@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -6,9 +7,8 @@ import { ProjectService } from '../../../core/services/project.service';
 @Component({
   selector: 'app-project-list',
   standalone: true,
-  imports: [FormsModule, RouterLink],
-  templateUrl: './project-list.component.html',
-  styleUrl: './project-list.component.css'
+  imports: [FormsModule, RouterLink, DatePipe],
+  templateUrl: './project-list.component.html'
 })
 export class ProjectListComponent implements OnInit {
   private readonly projectService = inject(ProjectService);

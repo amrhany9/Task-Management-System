@@ -1,13 +1,17 @@
-<h1>Projects</h1>
+<div class="mb-8">
+  <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Projects</h1>
+  <p class="mt-1.5 text-sm text-slate-500">Group your work into projects and track the tasks inside each one.</p>
+</div>
 
 @if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
+  <p class="alert-error mb-6">{{ errorMessage() }}</p>
 }
 
-<form class="create-form" (ngSubmit)="createProject()">
+<form class="card mb-8 flex flex-col gap-3 p-4 sm:flex-row sm:items-center" (ngSubmit)="createProject()">
   <input
     name="name"
     type="text"
+    class="field-input sm:flex-1"
     placeholder="Project name"
     [(ngModel)]="newProjectName"
     required
@@ -15,23 +19,37 @@
   <input
     name="description"
     type="text"
-    placeholder="Description"
+    class="field-input sm:flex-1"
+    placeholder="Description (optional)"
     [(ngModel)]="newProjectDescription"
   />
-  <button type="submit">Add project</button>
+  <button type="submit" class="btn-primary shrink-0">Add project</button>
 </form>
 
-<ul class="project-list">
+<ul class="grid gap-4 sm:grid-cols-2">
   @for (project of projects(); track project.id) {
-    <li class="project-card">
-      <a [routerLink]="['/projects', project.id]">
-        <strong>{{ project.name }}</strong>
-        <span class="task-count">{{ project.taskCount }} task(s)</span>
+    <li class="card group flex flex-col p-5 transition hover:border-indigo-300 hover:shadow-md">
+      <a class="flex-1" [routerLink]="['/projects', project.id]">
+        <div class="flex items-start justify-between gap-3">
+          <h2 class="font-semibold text-slate-900 group-hover:text-indigo-700">{{ project.name }}</h2>
+          <span class="badge shrink-0 bg-slate-50 text-slate-600 ring-slate-200">
+            {{ project.taskCount }} {{ project.taskCount === 1 ? 'task' : 'tasks' }}
+          </span>
+        </div>
+        <p class="mt-2 line-clamp-2 text-sm text-slate-500">
+          {{ project.description || 'No description' }}
+        </p>
       </a>
-      <p>{{ project.description }}</p>
-      <button type="button" class="danger" (click)="deleteProject(project.id)">Delete</button>
+
+      <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+        <span class="text-xs text-slate-400">Created {{ project.createdAt | date: 'mediumDate' }}</span>
+        <button type="button" class="btn-danger px-3 py-1.5" (click)="deleteProject(project.id)">Delete</button>
+      </div>
     </li>
   } @empty {
-    <p>No projects yet. Create one above.</p>
+    <li class="card col-span-full p-10 text-center">
+      <h2 class="text-sm font-medium text-slate-900">No projects yet</h2>
+      <p class="mt-1 text-sm text-slate-500">Create your first project using the form above.</p>
+    </li>
   }
 </ul>

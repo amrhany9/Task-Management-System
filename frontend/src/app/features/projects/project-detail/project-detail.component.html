@@ -1,25 +1,35 @@
-<a routerLink="/projects" class="back-link">&larr; Back to projects</a>
+<a
+  class="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-900"
+  routerLink="/projects"
+>
+  <span aria-hidden="true">&larr;</span> Back to projects
+</a>
 
 @if (errorMessage()) {
-  <p class="error">{{ errorMessage() }}</p>
+  <p class="alert-error mb-6">{{ errorMessage() }}</p>
 }
 
 @if (project(); as p) {
-  <div class="project-header">
+  <div class="card mb-8 p-6">
     @if (isEditing()) {
-      <form class="edit-form" (ngSubmit)="saveProject()">
-        <input name="editName" type="text" [(ngModel)]="editName" required />
-        <input name="editDescription" type="text" [(ngModel)]="editDescription" />
-        <button type="submit">Save</button>
+      <form class="flex flex-col gap-3 sm:flex-row sm:items-center" (ngSubmit)="saveProject()">
+        <input name="editName" type="text" class="field-input sm:flex-1" [(ngModel)]="editName" required />
+        <input name="editDescription" type="text" class="field-input sm:flex-1" [(ngModel)]="editDescription" />
+        <div class="flex shrink-0 gap-2">
+          <button type="submit" class="btn-primary">Save</button>
+          <button type="button" class="btn-secondary" (click)="isEditing.set(false)">Cancel</button>
+        </div>
       </form>
     } @else {
-      <div>
-        <h1>{{ p.name }}</h1>
-        <p>{{ p.description }}</p>
-      </div>
-      <div class="actions">
-        <button type="button" (click)="startEditing()">Edit</button>
-        <button type="button" class="danger" (click)="deleteProject()">Delete project</button>
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+          <h1 class="text-xl font-semibold tracking-tight text-slate-900">{{ p.name }}</h1>
+          <p class="mt-1.5 text-sm text-slate-500">{{ p.description || 'No description' }}</p>
+        </div>
+        <div class="flex shrink-0 gap-2">
+          <button type="button" class="btn-secondary" (click)="startEditing()">Edit</button>
+          <button type="button" class="btn-danger" (click)="deleteProject()">Delete project</button>
+        </div>
       </div>
     }
   </div>

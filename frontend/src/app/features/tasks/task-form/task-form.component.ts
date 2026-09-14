@@ -7,8 +7,7 @@ import { TaskPriorityLabelPipe, TaskStatusLabelPipe } from '../task-status-label
   selector: 'app-task-form',
   standalone: true,
   imports: [FormsModule, TaskStatusLabelPipe, TaskPriorityLabelPipe],
-  templateUrl: './task-form.component.html',
-  styleUrl: './task-form.component.css'
+  templateUrl: './task-form.component.html'
 })
 export class TaskFormComponent implements OnChanges {
   @Input() task: TaskItem | null = null;
