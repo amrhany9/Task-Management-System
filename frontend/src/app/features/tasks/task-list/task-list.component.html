@@ -1,0 +1,35 @@
+<h2>Tasks</h2>
+
+@if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+}
+
+<app-task-form (save)="createTask($event)" />
+
+<ul class="task-list">
+  @for (task of tasks(); track task.id) {
+    <li class="task-card">
+      @if (editingTaskId() === task.id) {
+        <app-task-form [task]="task" (save)="saveTask(task.id, $event)" (cancel)="editingTaskId.set(null)" />
+      } @else {
+        <div class="task-row">
+          <div>
+            <strong>{{ task.title }}</strong>
+            <p>{{ task.description }}</p>
+            <span class="badge status-{{ task.status }}">{{ task.status | taskStatusLabel }}</span>
+            <span class="badge priority-{{ task.priority }}">{{ task.priority | taskPriorityLabel }}</span>
+            @if (task.dueDate) {
+              <span class="due-date">Due {{ task.dueDate | date: 'mediumDate' }}</span>
+            }
+          </div>
+          <div class="task-actions">
+            <button type="button" (click)="startEditing(task)">Edit</button>
+            <button type="button" class="danger" (click)="deleteTask(task.id)">Delete</button>
+          </div>
+        </div>
+      }
+    </li>
+  } @empty {
+    <p>No tasks yet.</p>
+  }
+</ul>

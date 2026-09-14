@@ -1,0 +1,14 @@
+<header class="nav-bar">
+  <a class="brand" routerLink="/projects">Task Management</a>
+
+  @if (authService.isAuthenticated()) {
+    <div class="nav-actions">
+      <span class="user-name">{{ authService.currentUser()?.name }}</span>
+      <button type="button" (click)="logout()">Log out</button>
+    </div>
+  }
+</header>
+
+<main class="content">
+  <router-outlet />
+</main>

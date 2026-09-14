@@ -1,0 +1,60 @@
+.create-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.create-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.create-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+
+.project-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.project-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fff;
+}
+
+.project-card a {
+  display: flex;
+  justify-content: space-between;
+  text-decoration: none;
+  color: #1e293b;
+}
+
+.task-count {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.danger {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error {
+  color: #dc2626;
+}

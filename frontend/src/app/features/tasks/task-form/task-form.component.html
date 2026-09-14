@@ -1,0 +1,25 @@
+<form class="task-form" (ngSubmit)="submit()">
+  <input name="title" type="text" placeholder="Task title" [(ngModel)]="title" required />
+  <input name="description" type="text" placeholder="Description" [(ngModel)]="description" />
+
+  <select name="status" [(ngModel)]="status">
+    @for (s of statuses; track s) {
+      <option [value]="s">{{ s | taskStatusLabel }}</option>
+    }
+  </select>
+
+  <select name="priority" [(ngModel)]="priority">
+    @for (p of priorities; track p) {
+      <option [value]="p">{{ p | taskPriorityLabel }}</option>
+    }
+  </select>
+
+  <input name="dueDate" type="date" [(ngModel)]="dueDate" />
+
+  <div class="form-actions">
+    <button type="submit">{{ task ? 'Save' : 'Add task' }}</button>
+    @if (task) {
+      <button type="button" (click)="cancel.emit()">Cancel</button>
+    }
+  </div>
+</form>

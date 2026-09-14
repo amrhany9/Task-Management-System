@@ -1,0 +1,28 @@
+<a routerLink="/projects" class="back-link">&larr; Back to projects</a>
+
+@if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+}
+
+@if (project(); as p) {
+  <div class="project-header">
+    @if (isEditing()) {
+      <form class="edit-form" (ngSubmit)="saveProject()">
+        <input name="editName" type="text" [(ngModel)]="editName" required />
+        <input name="editDescription" type="text" [(ngModel)]="editDescription" />
+        <button type="submit">Save</button>
+      </form>
+    } @else {
+      <div>
+        <h1>{{ p.name }}</h1>
+        <p>{{ p.description }}</p>
+      </div>
+      <div class="actions">
+        <button type="button" (click)="startEditing()">Edit</button>
+        <button type="button" class="danger" (click)="deleteProject()">Delete project</button>
+      </div>
+    }
+  </div>
+
+  <app-task-list [projectId]="p.id" />
+}

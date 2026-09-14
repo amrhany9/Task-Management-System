@@ -1,0 +1,37 @@
+<h1>Projects</h1>
+
+@if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+}
+
+<form class="create-form" (ngSubmit)="createProject()">
+  <input
+    name="name"
+    type="text"
+    placeholder="Project name"
+    [(ngModel)]="newProjectName"
+    required
+  />
+  <input
+    name="description"
+    type="text"
+    placeholder="Description"
+    [(ngModel)]="newProjectDescription"
+  />
+  <button type="submit">Add project</button>
+</form>
+
+<ul class="project-list">
+  @for (project of projects(); track project.id) {
+    <li class="project-card">
+      <a [routerLink]="['/projects', project.id]">
+        <strong>{{ project.name }}</strong>
+        <span class="task-count">{{ project.taskCount }} task(s)</span>
+      </a>
+      <p>{{ project.description }}</p>
+      <button type="button" class="danger" (click)="deleteProject(project.id)">Delete</button>
+    </li>
+  } @empty {
+    <p>No projects yet. Create one above.</p>
+  }
+</ul>
