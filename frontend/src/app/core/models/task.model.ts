@@ -24,7 +24,16 @@ export interface TaskItem {
   assigneeName: string | null;
 }
 
-export interface TaskRequest {
+/** New tasks always start at `ToDo`; the API ignores any client-supplied status. */
+export interface CreateTaskRequest {
+  title: string;
+  description: string;
+  priority: TaskPriority;
+  dueDate: string | null;
+  assigneeId: string | null;
+}
+
+export interface UpdateTaskRequest {
   title: string;
   description: string;
   status: TaskItemStatus;

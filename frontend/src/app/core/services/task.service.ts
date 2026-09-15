@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { TaskItem, TaskRequest } from '../models/task.model';
+import { CreateTaskRequest, TaskItem, UpdateTaskRequest } from '../models/task.model';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
@@ -19,13 +19,13 @@ export class TaskService {
       .pipe(tap((tasks) => this.tasksSignal.set(tasks)));
   }
 
-  create(projectId: string, request: TaskRequest): Observable<TaskItem> {
+  create(projectId: string, request: CreateTaskRequest): Observable<TaskItem> {
     return this.http
       .post<TaskItem>(`${this.baseUrl}/projects/${projectId}/tasks`, request)
       .pipe(tap((task) => this.tasksSignal.update((tasks) => [task, ...tasks])));
   }
 
-  update(id: string, request: TaskRequest): Observable<TaskItem> {
+  update(id: string, request: UpdateTaskRequest): Observable<TaskItem> {
     return this.http.put<TaskItem>(`${this.baseUrl}/tasks/${id}`, request).pipe(
       tap((updated) => this.tasksSignal.update((tasks) => tasks.map((task) => (task.id === id ? updated : task))))
     );

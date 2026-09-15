@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Project, ProjectRequest } from '../models/project.model';
+import { CreateProjectRequest, Project, UpdateProjectRequest } from '../models/project.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
@@ -21,13 +21,13 @@ export class ProjectService {
     return this.http.get<Project>(`${this.baseUrl}/${id}`);
   }
 
-  create(request: ProjectRequest): Observable<Project> {
+  create(request: CreateProjectRequest): Observable<Project> {
     return this.http
       .post<Project>(this.baseUrl, request)
       .pipe(tap((project) => this.projectsSignal.update((projects) => [project, ...projects])));
   }
 
-  update(id: string, request: ProjectRequest): Observable<Project> {
+  update(id: string, request: UpdateProjectRequest): Observable<Project> {
     return this.http.put<Project>(`${this.baseUrl}/${id}`, request).pipe(
       tap((updated) =>
         this.projectsSignal.update((projects) => projects.map((project) => (project.id === id ? updated : project)))
