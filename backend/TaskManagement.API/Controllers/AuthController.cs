@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using TaskManagement.API.Dtos.Auth;
-using TaskManagement.API.Interfaces.Services;
+using TaskManagement.Application.Dtos.Auth;
+using TaskManagement.Application.Interfaces.Services;
 
 namespace TaskManagement.API.Controllers
 {

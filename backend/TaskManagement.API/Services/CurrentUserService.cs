@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using TaskManagement.API.Interfaces.Services;
+using TaskManagement.Application.Interfaces.Services;
 
 namespace TaskManagement.API.Services
 {

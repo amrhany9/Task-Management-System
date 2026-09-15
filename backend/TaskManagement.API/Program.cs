@@ -1,14 +1,12 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using TaskManagement.API.Configuration;
-using TaskManagement.API.Data;
-using TaskManagement.API.Interfaces.Repositories;
-using TaskManagement.API.Interfaces.Services;
 using TaskManagement.API.Middlewares;
-using TaskManagement.API.Repositories;
 using TaskManagement.API.Services;
+using TaskManagement.Application;
+using TaskManagement.Application.Interfaces.Services;
+using TaskManagement.Infrastructure;
+using TaskManagement.Infrastructure.Authentication;
 
 namespace TaskManagement.API
 {
@@ -47,10 +45,9 @@ namespace TaskManagement.API
                 });
             });
 
-            builder.Services.AddDbContext<TaskManagementDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddApplication();
 
-            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
             var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
                 ?? throw new InvalidOperationException("Jwt configuration section is missing.");
 
@@ -87,15 +84,6 @@ namespace TaskManagement.API
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-            builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-            builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-
-            builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<IProjectService, ProjectService>();
-            builder.Services.AddScoped<ITaskService, TaskService>();
 
             var app = builder.Build();
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagement.API.Dtos.Tasks;
-using TaskManagement.API.Interfaces.Services;
+using TaskManagement.Application.Dtos.Tasks;
+using TaskManagement.Application.Interfaces.Services;
 
 namespace TaskManagement.API.Controllers
 {
@@ -31,14 +31,14 @@ namespace TaskManagement.API.Controllers
         }
 
         [HttpPost("api/projects/{projectId:guid}/tasks")]
-        public async Task<ActionResult<TaskResponse>> Create(Guid projectId, TaskRequest request)
+        public async Task<ActionResult<TaskResponse>> Create(Guid projectId, CreateTaskRequest request)
         {
             var created = await _taskService.CreateAsync(projectId, request);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("api/tasks/{id:guid}")]
-        public async Task<ActionResult<TaskResponse>> Update(Guid id, TaskRequest request)
+        public async Task<ActionResult<TaskResponse>> Update(Guid id, UpdateTaskRequest request)
         {
             var updated = await _taskService.UpdateAsync(id, request);
             return Ok(updated);
