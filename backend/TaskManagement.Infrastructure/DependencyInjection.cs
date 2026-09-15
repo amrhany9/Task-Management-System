@@ -19,9 +19,11 @@ namespace TaskManagement.Infrastructure
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+            services.Configure<GoogleAuthSettings>(configuration.GetSection("GoogleAuth"));
 
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();

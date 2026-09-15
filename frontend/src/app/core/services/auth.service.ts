@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthUser, LoginRequest, RegisterRequest } from '../models/user.model';
+import { AuthUser, GoogleSignInRequest, LoginRequest, RegisterRequest } from '../models/user.model';
 
 const STORAGE_KEY = 'tms.auth.user';
 
@@ -28,6 +28,13 @@ export class AuthService {
   login(request: LoginRequest): Observable<AuthUser> {
     return this.http
       .post<AuthUser>(`${environment.apiBaseUrl}/auth/login`, request)
+      .pipe(tap((user) => this.setSession(user)));
+  }
+
+  /** Exchanges a Google ID token for this app's own session token. */
+  googleSignIn(request: GoogleSignInRequest): Observable<AuthUser> {
+    return this.http
+      .post<AuthUser>(`${environment.apiBaseUrl}/auth/google`, request)
       .pipe(tap((user) => this.setSession(user)));
   }
 

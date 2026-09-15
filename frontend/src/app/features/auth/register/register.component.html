@@ -65,6 +65,15 @@
         </button>
       </div>
     </form>
+
+    <div class="mt-6">
+      <app-google-sign-in-button
+        mode="signup"
+        [disabled]="isSubmitting()"
+        (credential)="signUpWithGoogle($event)"
+        (failed)="onGoogleUnavailable($event)"
+      />
+    </div>
   </div>
 
   <p class="mt-6 text-center text-sm text-surface-500 dark:text-surface-400">

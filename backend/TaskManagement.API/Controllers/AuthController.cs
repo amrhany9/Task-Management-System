@@ -28,5 +28,12 @@ namespace TaskManagement.API.Controllers
             var response = await _authService.LoginAsync(request);
             return Ok(response);
         }
+
+        [HttpPost("google")]
+        public async Task<ActionResult<AuthResponse>> GoogleSignIn(GoogleSignInRequest request)
+        {
+            var response = await _authService.GoogleSignInAsync(request);
+            return Ok(response);
+        }
     }
 }

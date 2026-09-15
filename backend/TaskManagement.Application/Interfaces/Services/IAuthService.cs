@@ -6,5 +6,6 @@ namespace TaskManagement.Application.Interfaces.Services
     {
         Task<AuthResponse> RegisterAsync(RegisterRequest request);
         Task<AuthResponse> LoginAsync(LoginRequest request);
+        Task<AuthResponse> GoogleSignInAsync(GoogleSignInRequest request);
     }
 }
