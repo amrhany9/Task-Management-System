@@ -1,55 +1,103 @@
-<h2 class="mb-4 text-lg font-semibold tracking-tight text-slate-900">Tasks</h2>
+<h2 class="mb-4 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">Tasks</h2>
 
 @if (errorMessage()) {
-  <p class="alert-error mb-4">{{ errorMessage() }}</p>
+  <p class="alert-error mb-4" role="alert">{{ errorMessage() }}</p>
 }
 
 <div class="card mb-6 p-4">
-  <app-task-form (save)="createTask($event)" />
+  <app-task-form [isBusy]="isCreating()" (create)="createTask($event)" />
 </div>
 
-<ul class="space-y-3">
-  @for (task of tasks(); track task.id) {
-    <li class="card p-4">
-      @if (editingTaskId() === task.id) {
-        <app-task-form [task]="task" (save)="saveTask(task.id, $event)" (cancel)="editingTaskId.set(null)" />
-      } @else {
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div class="min-w-0 flex-1">
-            <h3
-              class="font-medium text-slate-900"
-              [class.line-through]="task.status === TaskItemStatus.Done"
-              [class.text-slate-400]="task.status === TaskItemStatus.Done"
-            >
-              {{ task.title }}
-            </h3>
+@if (isLoading()) {
+  <ul class="space-y-3" aria-busy="true" aria-live="polite">
+    <li class="sr-only">Loading tasks…</li>
+    @for (row of skeletonRows; track row) {
+      <li class="card p-4" aria-hidden="true">
+        <div class="skeleton h-4 w-1/3"></div>
+        <div class="skeleton mt-3 h-3 w-2/3"></div>
+        <div class="mt-4 flex gap-2">
+          <div class="skeleton h-5 w-16 rounded-full"></div>
+          <div class="skeleton h-5 w-16 rounded-full"></div>
+        </div>
+      </li>
+    }
+  </ul>
+} @else {
+  <ul class="space-y-3">
+    @for (task of tasks(); track task.id) {
+      <li class="card p-4">
+        @if (editingTaskId() === task.id) {
+          <app-task-form
+            [task]="task"
+            [isBusy]="savingTaskId() === task.id"
+            (update)="saveTask(task.id, $event)"
+            (cancel)="editingTaskId.set(null)"
+          />
+        } @else {
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0 flex-1">
+              <h3
+                class="font-medium text-slate-900 dark:text-slate-100"
+                [class.line-through]="task.status === TaskItemStatus.Done"
+                [class.text-slate-400]="task.status === TaskItemStatus.Done"
+                [class.dark:text-slate-500]="task.status === TaskItemStatus.Done"
+              >
+                {{ task.title }}
+              </h3>
 
-            @if (task.description) {
-              <p class="mt-1 text-sm text-slate-500">{{ task.description }}</p>
-            }
-
-            <div class="mt-3 flex flex-wrap items-center gap-2">
-              <span class="badge" [class]="statusClasses(task.status)">{{ task.status | taskStatusLabel }}</span>
-              <span class="badge" [class]="priorityClasses(task.priority)">
-                {{ task.priority | taskPriorityLabel }}
-              </span>
-              @if (task.dueDate) {
-                <span class="text-xs text-slate-400">Due {{ task.dueDate | date: 'mediumDate' }}</span>
+              @if (task.description) {
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ task.description }}</p>
               }
+
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <span class="badge" [class]="statusClasses(task.status)">{{ task.status | taskStatusLabel }}</span>
+                <span class="badge" [class]="priorityClasses(task.priority)">
+                  {{ task.priority | taskPriorityLabel }}
+                </span>
+                @if (task.dueDate) {
+                  <span class="text-xs text-slate-400 dark:text-slate-500">
+                    Due {{ task.dueDate | date: 'mediumDate' }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="flex shrink-0 gap-2">
+              <button
+                type="button"
+                class="btn-secondary px-3 py-1.5"
+                [attr.aria-label]="'Edit task ' + task.title"
+                (click)="startEditing(task)"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                class="btn-danger px-3 py-1.5"
+                [attr.aria-label]="'Delete task ' + task.title"
+                (click)="requestDelete(task)"
+              >
+                Delete
+              </button>
             </div>
           </div>
+        }
+      </li>
+    } @empty {
+      <li class="card p-10 text-center">
+        <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100">No tasks yet</h3>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Add your first task using the form above.</p>
+      </li>
+    }
+  </ul>
+}
 
-          <div class="flex shrink-0 gap-2">
-            <button type="button" class="btn-secondary px-3 py-1.5" (click)="startEditing(task)">Edit</button>
-            <button type="button" class="btn-danger px-3 py-1.5" (click)="deleteTask(task.id)">Delete</button>
-          </div>
-        </div>
-      }
-    </li>
-  } @empty {
-    <li class="card p-10 text-center">
-      <h3 class="text-sm font-medium text-slate-900">No tasks yet</h3>
-      <p class="mt-1 text-sm text-slate-500">Add your first task using the form above.</p>
-    </li>
-  }
-</ul>
+@if (pendingDeletion(); as task) {
+  <app-confirm-dialog
+    title="Delete task?"
+    [message]="'“' + task.title + '” will be permanently deleted.'"
+    [isBusy]="isDeleting()"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()"
+  />
+}

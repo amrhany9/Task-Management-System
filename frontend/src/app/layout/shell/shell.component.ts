@@ -1,6 +1,7 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-shell',
@@ -9,6 +10,10 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './shell.component.html'
 })
 export class ShellComponent {
+  protected readonly themeService = inject(ThemeService);
+
+  readonly isMenuOpen = signal(false);
+
   readonly userInitials = computed(() => {
     const name = this.authService.currentUser()?.name ?? '';
 
@@ -25,7 +30,12 @@ export class ShellComponent {
     private readonly router: Router
   ) {}
 
+  toggleMenu(): void {
+    this.isMenuOpen.update((open) => !open);
+  }
+
   logout(): void {
+    this.isMenuOpen.set(false);
     this.authService.logout();
     this.router.navigate(['/login']);
   }
