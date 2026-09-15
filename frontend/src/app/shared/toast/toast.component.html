@@ -1,0 +1,91 @@
+<div
+  class="pointer-events-none fixed bottom-5 right-5 z-50 flex w-full max-w-sm flex-col gap-2 p-4"
+  aria-live="polite"
+  aria-atomic="false"
+>
+  @for (toast of notificationService.toasts(); track toast.id) {
+    <div
+      class="pointer-events-auto flex animate-slide-in-up items-start gap-3 rounded-2xl border bg-white p-4 shadow-float dark:bg-surface-900"
+      [class.border-emerald-200]="toast.type === 'success'"
+      [class.dark:border-emerald-800]="toast.type === 'success'"
+      [class.border-rose-200]="toast.type === 'error'"
+      [class.dark:border-rose-800]="toast.type === 'error'"
+      [class.border-primary-200]="toast.type === 'info'"
+      [class.dark:border-primary-800]="toast.type === 'info'"
+      [class.border-amber-200]="toast.type === 'warning'"
+      [class.dark:border-amber-800]="toast.type === 'warning'"
+      [attr.role]="toast.type === 'error' ? 'alert' : 'status'"
+    >
+      <div class="mt-0.5 shrink-0">
+        @switch (toast.type) {
+          @case ('success') {
+            <div
+              class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          }
+          @case ('error') {
+            <div
+              class="flex h-7 w-7 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+          }
+          @case ('warning') {
+            <div
+              class="flex h-7 w-7 items-center justify-center rounded-full bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
+          }
+          @default {
+            <div
+              class="flex h-7 w-7 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-950/60 dark:text-primary-400"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="min-w-0 flex-1">
+        @if (toast.title) {
+          <h5 class="text-xs font-bold leading-snug text-surface-900 dark:text-surface-100">{{ toast.title }}</h5>
+        }
+        <p class="mt-0.5 break-words text-xs leading-relaxed text-surface-600 dark:text-surface-300">
+          {{ toast.message }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="shrink-0 rounded-lg p-1 text-surface-400 transition hover:text-surface-600 dark:hover:text-surface-200"
+        aria-label="Dismiss notification"
+        (click)="notificationService.remove(toast.id)"
+      >
+        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  }
+</div>

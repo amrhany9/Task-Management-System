@@ -1,11 +1,14 @@
-<div class="mx-auto w-full max-w-sm">
+<div class="mx-auto w-full max-w-md">
   <div class="mb-8 text-center">
-    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Welcome back</h1>
-    <p class="mt-1.5 text-sm text-slate-500">Log in to manage your projects and tasks.</p>
+    <app-brand-mark class="mb-4" size="lg" />
+    <h1 class="text-2xl font-bold tracking-tight text-surface-900 sm:text-3xl dark:text-white">Welcome back</h1>
+    <p class="mt-2 text-sm text-surface-500 dark:text-surface-400">
+      Log in to manage your projects and tasks.
+    </p>
   </div>
 
-  <div class="card p-6 sm:p-8">
-    <form class="space-y-5" (ngSubmit)="submit()" #loginForm="ngForm">
+  <div class="card p-8">
+    <form class="space-y-4" (ngSubmit)="submit()" #loginForm="ngForm">
       <div>
         <label class="field-label" for="email">Email</label>
         <input
@@ -15,6 +18,7 @@
           class="field-input"
           placeholder="you@example.com"
           [(ngModel)]="email"
+          [disabled]="isSubmitting()"
           required
           autocomplete="email"
         />
@@ -29,23 +33,28 @@
           class="field-input"
           placeholder="••••••••"
           [(ngModel)]="password"
+          [disabled]="isSubmitting()"
           required
           autocomplete="current-password"
         />
       </div>
 
       @if (errorMessage()) {
-        <p class="alert-error">{{ errorMessage() }}</p>
+        <p class="alert-error" role="alert">{{ errorMessage() }}</p>
       }
 
-      <button type="submit" class="btn-primary w-full" [disabled]="loginForm.invalid || isSubmitting()">
-        {{ isSubmitting() ? 'Logging in…' : 'Log in' }}
-      </button>
+      <div class="pt-2">
+        <button type="submit" class="btn-primary w-full" [disabled]="loginForm.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Logging in…' : 'Log in' }}
+        </button>
+      </div>
     </form>
   </div>
 
-  <p class="mt-6 text-center text-sm text-slate-500">
+  <p class="mt-6 text-center text-sm text-surface-500 dark:text-surface-400">
     No account yet?
-    <a class="font-medium text-indigo-600 hover:text-indigo-700" routerLink="/register">Register</a>
+    <a class="ml-1 font-semibold text-primary-600 transition hover:text-primary-500" routerLink="/register">
+      Create one
+    </a>
   </p>
 </div>

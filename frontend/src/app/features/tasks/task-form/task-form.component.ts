@@ -10,6 +10,8 @@ import {
 import { TaskPriorityLabelPipe, TaskStatusLabelPipe } from '../task-status-label.pipe';
 
 /**
+ * Task create/update form, hosted inside a modal.
+ *
  * Emits a create payload when adding and an update payload when editing: the API
  * only accepts a status on update, since new tasks always start at `ToDo`.
  */
@@ -74,14 +76,5 @@ export class TaskFormComponent implements OnChanges {
       dueDate,
       assigneeId: null
     });
-
-    this.resetForm();
-  }
-
-  private resetForm(): void {
-    this.title = '';
-    this.description = '';
-    this.priority = TaskPriority.Medium;
-    this.dueDate = '';
   }
 }

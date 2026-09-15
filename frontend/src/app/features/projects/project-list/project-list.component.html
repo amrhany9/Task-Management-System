@@ -1,103 +1,106 @@
-<div class="mb-8">
-  <h1 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Projects</h1>
-  <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
-    Group your work into projects and track the tasks inside each one.
-  </p>
+<div class="flex flex-col gap-6 sm:gap-8">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="page-title">Projects</h1>
+      <p class="page-sub">Group your work into projects and track the tasks inside each one.</p>
+    </div>
+
+    <button type="button" class="btn-primary shrink-0" (click)="openCreate()">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      New project
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="alert-error" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (isLoading()) {
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-live="polite">
+      <li class="sr-only">Loading projects…</li>
+      @for (card of skeletonCards; track card) {
+        <li class="card p-5" aria-hidden="true">
+          <div class="flex items-start justify-between gap-3">
+            <div class="skeleton h-4 w-1/2"></div>
+            <div class="skeleton h-5 w-16 rounded-md"></div>
+          </div>
+          <div class="skeleton mt-3 h-3 w-3/4"></div>
+          <div class="skeleton mt-6 h-3 w-1/3"></div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      @for (project of projects(); track project.id) {
+        <li class="card card-interactive group flex flex-col p-5">
+          <a
+            class="flex-1 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            [routerLink]="['/projects', project.id]"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <h2 class="font-bold tracking-tight text-surface-900 transition-colors group-hover:text-primary-600 dark:text-white dark:group-hover:text-primary-400">
+                {{ project.name }}
+              </h2>
+              <span class="badge badge-sm badge-info shrink-0">
+                {{ project.taskCount }} {{ project.taskCount === 1 ? 'task' : 'tasks' }}
+              </span>
+            </div>
+            <p class="mt-2 line-clamp-2 text-sm text-surface-500 dark:text-surface-400">
+              {{ project.description || 'No description' }}
+            </p>
+          </a>
+
+          <div class="mt-4 flex items-center justify-between border-t border-surface-100 pt-3 dark:border-surface-800">
+            <span class="text-xs text-surface-400 dark:text-surface-500">
+              {{ project.createdAt | date: 'mediumDate' }}
+            </span>
+            <button
+              type="button"
+              class="btn-ghost btn-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/50"
+              [attr.aria-label]="'Delete project ' + project.name"
+              (click)="requestDelete(project)"
+            >
+              Delete
+            </button>
+          </div>
+        </li>
+      } @empty {
+        <li class="card col-span-full p-12 text-center">
+          <span class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 dark:bg-primary-950/60 dark:text-primary-400">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V7a2 2 0 012-2h3l2 2h5a2 2 0 012 2v8a2 2 0 01-2 2z" />
+            </svg>
+          </span>
+          <h2 class="text-sm font-bold text-surface-900 dark:text-white">No projects yet</h2>
+          <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">
+            Create your first project to start tracking tasks.
+          </p>
+          <button type="button" class="btn-primary mt-5" (click)="openCreate()">New project</button>
+        </li>
+      }
+    </ul>
+  }
 </div>
 
-@if (errorMessage()) {
-  <p class="alert-error mb-6" role="alert">{{ errorMessage() }}</p>
-}
+@if (isCreateOpen()) {
+  <app-modal
+    title="New project"
+    subtitle="Give your project a name and an optional description."
+    size="sm"
+    [isBusy]="isCreating()"
+    (closed)="closeCreate()"
+  >
+    <app-project-form [isBusy]="isCreating()" (create)="createProject($event)" />
 
-<form class="card mb-8 flex flex-col gap-3 p-4 sm:flex-row sm:items-center" (ngSubmit)="createProject()">
-  <div class="sm:flex-1">
-    <label class="sr-only" for="new-project-name">Project name</label>
-    <input
-      id="new-project-name"
-      name="name"
-      type="text"
-      class="field-input"
-      placeholder="Project name"
-      [(ngModel)]="newProjectName"
-      [disabled]="isCreating()"
-      required
-    />
-  </div>
-  <div class="sm:flex-1">
-    <label class="sr-only" for="new-project-description">Description</label>
-    <input
-      id="new-project-description"
-      name="description"
-      type="text"
-      class="field-input"
-      placeholder="Description (optional)"
-      [(ngModel)]="newProjectDescription"
-      [disabled]="isCreating()"
-    />
-  </div>
-  <button type="submit" class="btn-primary shrink-0" [disabled]="isNameMissing || isCreating()">
-    {{ isCreating() ? 'Adding…' : 'Add project' }}
-  </button>
-</form>
-
-@if (isLoading()) {
-  <ul class="grid gap-4 sm:grid-cols-2" aria-busy="true" aria-live="polite">
-    <li class="sr-only">Loading projects…</li>
-    @for (card of skeletonCards; track card) {
-      <li class="card p-5" aria-hidden="true">
-        <div class="flex items-start justify-between gap-3">
-          <div class="skeleton h-4 w-1/2"></div>
-          <div class="skeleton h-5 w-14 rounded-full"></div>
-        </div>
-        <div class="skeleton mt-3 h-3 w-3/4"></div>
-        <div class="skeleton mt-6 h-3 w-1/3"></div>
-      </li>
-    }
-  </ul>
-} @else {
-  <ul class="grid gap-4 sm:grid-cols-2">
-    @for (project of projects(); track project.id) {
-      <li class="card group flex flex-col p-5 transition hover:border-indigo-300 hover:shadow-md dark:hover:border-indigo-700">
-        <a
-          class="flex-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-          [routerLink]="['/projects', project.id]"
-        >
-          <div class="flex items-start justify-between gap-3">
-            <h2 class="font-semibold text-slate-900 group-hover:text-indigo-700 dark:text-slate-100 dark:group-hover:text-indigo-400">
-              {{ project.name }}
-            </h2>
-            <span
-              class="badge shrink-0 bg-slate-50 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700"
-            >
-              {{ project.taskCount }} {{ project.taskCount === 1 ? 'task' : 'tasks' }}
-            </span>
-          </div>
-          <p class="mt-2 line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
-            {{ project.description || 'No description' }}
-          </p>
-        </a>
-
-        <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-          <span class="text-xs text-slate-400 dark:text-slate-500">
-            Created {{ project.createdAt | date: 'mediumDate' }}
-          </span>
-          <button
-            type="button"
-            class="btn-danger px-3 py-1.5"
-            [attr.aria-label]="'Delete project ' + project.name"
-            (click)="requestDelete(project)"
-          >
-            Delete
-          </button>
-        </div>
-      </li>
-    } @empty {
-      <li class="card col-span-full p-10 text-center">
-        <h2 class="text-sm font-medium text-slate-900 dark:text-slate-100">No projects yet</h2>
-        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Create your first project using the form above.</p>
-      </li>
-    }
-  </ul>
+    <div slot="footer">
+      <button type="button" class="btn-secondary" [disabled]="isCreating()" (click)="closeCreate()">Cancel</button>
+      <button type="submit" form="project-form" class="btn-primary" [disabled]="isCreating()">
+        {{ isCreating() ? 'Creating…' : 'Create project' }}
+      </button>
+    </div>
+  </app-modal>
 }
 
 @if (pendingDeletion(); as project) {

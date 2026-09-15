@@ -1,0 +1,28 @@
+<form id="project-form" class="flex flex-col gap-4" (ngSubmit)="submit()">
+  <div>
+    <label class="field-label" for="project-name">Project name</label>
+    <input
+      id="project-name"
+      name="name"
+      type="text"
+      class="field-input"
+      placeholder="e.g. Website redesign"
+      [(ngModel)]="name"
+      [disabled]="isBusy"
+      required
+    />
+  </div>
+
+  <div>
+    <label class="field-label" for="project-description">Description</label>
+    <input
+      id="project-description"
+      name="description"
+      type="text"
+      class="field-input"
+      placeholder="Optional short summary"
+      [(ngModel)]="description"
+      [disabled]="isBusy"
+    />
+  </div>
+</form>

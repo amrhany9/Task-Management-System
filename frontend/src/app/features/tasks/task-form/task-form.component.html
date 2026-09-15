@@ -1,37 +1,36 @@
-<form class="flex flex-col gap-3" (ngSubmit)="submit()">
-  <div class="flex flex-col gap-3 sm:flex-row">
-    <div class="sm:flex-1">
-      <label class="sr-only" [attr.for]="task ? 'edit-title' : 'new-title'">Task title</label>
-      <input
-        [id]="task ? 'edit-title' : 'new-title'"
-        name="title"
-        type="text"
-        class="field-input"
-        placeholder="Task title"
-        [(ngModel)]="title"
-        [disabled]="isBusy"
-        required
-      />
-    </div>
-    <div class="sm:flex-1">
-      <label class="sr-only" [attr.for]="task ? 'edit-description' : 'new-description'">Description</label>
-      <input
-        [id]="task ? 'edit-description' : 'new-description'"
-        name="description"
-        type="text"
-        class="field-input"
-        placeholder="Description (optional)"
-        [(ngModel)]="description"
-        [disabled]="isBusy"
-      />
-    </div>
+<form id="task-form" class="flex flex-col gap-4" (ngSubmit)="submit()">
+  <div>
+    <label class="field-label" for="task-title">Title</label>
+    <input
+      id="task-title"
+      name="title"
+      type="text"
+      class="field-input"
+      placeholder="e.g. Draft the launch checklist"
+      [(ngModel)]="title"
+      [disabled]="isBusy"
+      required
+    />
   </div>
 
-  <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+  <div>
+    <label class="field-label" for="task-description">Description</label>
+    <input
+      id="task-description"
+      name="description"
+      type="text"
+      class="field-input"
+      placeholder="Optional detail"
+      [(ngModel)]="description"
+      [disabled]="isBusy"
+    />
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
     @if (task) {
       <div>
-        <label class="sr-only" for="edit-status">Status</label>
-        <select id="edit-status" name="status" class="field-input sm:w-40" [(ngModel)]="status" [disabled]="isBusy">
+        <label class="field-label" for="task-status">Status</label>
+        <select id="task-status" name="status" class="field-input" [(ngModel)]="status" [disabled]="isBusy">
           @for (s of statuses; track s) {
             <option [value]="s">{{ s | taskStatusLabel }}</option>
           }
@@ -40,14 +39,8 @@
     }
 
     <div>
-      <label class="sr-only" [attr.for]="task ? 'edit-priority' : 'new-priority'">Priority</label>
-      <select
-        [id]="task ? 'edit-priority' : 'new-priority'"
-        name="priority"
-        class="field-input sm:w-40"
-        [(ngModel)]="priority"
-        [disabled]="isBusy"
-      >
+      <label class="field-label" for="task-priority">Priority</label>
+      <select id="task-priority" name="priority" class="field-input" [(ngModel)]="priority" [disabled]="isBusy">
         @for (p of priorities; track p) {
           <option [value]="p">{{ p | taskPriorityLabel }}</option>
         }
@@ -55,28 +48,8 @@
     </div>
 
     <div>
-      <label class="sr-only" [attr.for]="task ? 'edit-due' : 'new-due'">Due date</label>
-      <input
-        [id]="task ? 'edit-due' : 'new-due'"
-        name="dueDate"
-        type="date"
-        class="field-input sm:w-44"
-        [(ngModel)]="dueDate"
-        [disabled]="isBusy"
-      />
-    </div>
-
-    <div class="flex gap-2 sm:ml-auto">
-      <button type="submit" class="btn-primary" [disabled]="isTitleMissing || isBusy">
-        @if (isBusy) {
-          {{ task ? 'Saving…' : 'Adding…' }}
-        } @else {
-          {{ task ? 'Save' : 'Add task' }}
-        }
-      </button>
-      @if (task) {
-        <button type="button" class="btn-secondary" [disabled]="isBusy" (click)="cancel.emit()">Cancel</button>
-      }
+      <label class="field-label" for="task-due">Due date</label>
+      <input id="task-due" name="dueDate" type="date" class="field-input" [(ngModel)]="dueDate" [disabled]="isBusy" />
     </div>
   </div>
 </form>

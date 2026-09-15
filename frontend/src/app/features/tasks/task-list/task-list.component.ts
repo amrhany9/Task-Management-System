@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, Input, OnChanges, inject, signal } from '@angular/core';
+import { Component, Input, OnChanges, computed, inject, signal } from '@angular/core';
 import {
   CreateTaskRequest,
   TaskItem,
@@ -7,31 +7,41 @@ import {
   TaskPriority,
   UpdateTaskRequest
 } from '../../../core/models/task.model';
+import { NotificationService } from '../../../core/services/notification.service';
 import { TaskService } from '../../../core/services/task.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { ModalComponent } from '../../../shared/modal/modal.component';
 import { TaskFormComponent } from '../task-form/task-form.component';
 import { TaskPriorityLabelPipe, TaskStatusLabelPipe } from '../task-status-label.pipe';
 
 const STATUS_CLASSES: Record<TaskItemStatus, string> = {
-  [TaskItemStatus.ToDo]: 'bg-slate-50 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700',
-  [TaskItemStatus.InProgress]: 'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:ring-blue-900',
-  [TaskItemStatus.Done]: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-900'
+  [TaskItemStatus.ToDo]: 'badge-neutral',
+  [TaskItemStatus.InProgress]: 'badge-info',
+  [TaskItemStatus.Done]: 'badge-success'
 };
 
 const PRIORITY_CLASSES: Record<TaskPriority, string> = {
-  [TaskPriority.Low]: 'bg-slate-50 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700',
-  [TaskPriority.Medium]: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900',
-  [TaskPriority.High]: 'bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-900'
+  [TaskPriority.Low]: 'badge-neutral',
+  [TaskPriority.Medium]: 'badge-warning',
+  [TaskPriority.High]: 'badge-danger'
 };
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [TaskFormComponent, ConfirmDialogComponent, TaskStatusLabelPipe, TaskPriorityLabelPipe, DatePipe],
+  imports: [
+    TaskFormComponent,
+    ConfirmDialogComponent,
+    ModalComponent,
+    TaskStatusLabelPipe,
+    TaskPriorityLabelPipe,
+    DatePipe
+  ],
   templateUrl: './task-list.component.html'
 })
 export class TaskListComponent implements OnChanges {
   private readonly taskService = inject(TaskService);
+  private readonly notificationService = inject(NotificationService);
 
   @Input({ required: true }) projectId!: string;
 
@@ -39,12 +49,19 @@ export class TaskListComponent implements OnChanges {
   readonly tasks = this.taskService.tasks;
 
   readonly isLoading = signal(true);
-  readonly isCreating = signal(false);
-  readonly savingTaskId = signal<string | null>(null);
+  readonly isSubmitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly editingTaskId = signal<string | null>(null);
   readonly pendingDeletion = signal<TaskItem | null>(null);
   readonly isDeleting = signal(false);
+
+  /** Null while closed; holds the task being edited, or null-task for create. */
+  readonly isFormOpen = signal(false);
+  readonly editingTask = signal<TaskItem | null>(null);
+
+  readonly formTitle = computed(() => (this.editingTask() ? 'Edit task' : 'New task'));
+  readonly formSubtitle = computed(() =>
+    this.editingTask() ? 'Update the details for this task.' : 'New tasks start in the To Do column.'
+  );
 
   /** Skeleton rows rendered while the first load is in flight. */
   readonly skeletonRows = [0, 1, 2];
@@ -70,34 +87,50 @@ export class TaskListComponent implements OnChanges {
     return PRIORITY_CLASSES[priority];
   }
 
+  openCreate(): void {
+    this.editingTask.set(null);
+    this.isFormOpen.set(true);
+  }
+
+  openEdit(task: TaskItem): void {
+    this.editingTask.set(task);
+    this.isFormOpen.set(true);
+  }
+
+  closeForm(): void {
+    this.isFormOpen.set(false);
+    this.editingTask.set(null);
+  }
+
   createTask(request: CreateTaskRequest): void {
-    this.isCreating.set(true);
+    this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
     this.taskService.create(this.projectId, request).subscribe({
-      next: () => this.isCreating.set(false),
+      next: (task) => {
+        this.isSubmitting.set(false);
+        this.closeForm();
+        this.notificationService.success(`Task “${task.title}” added`);
+      },
       error: () => {
-        this.isCreating.set(false);
+        this.isSubmitting.set(false);
         this.errorMessage.set('Unable to create task.');
       }
     });
   }
 
-  startEditing(task: TaskItem): void {
-    this.editingTaskId.set(task.id);
-  }
-
   saveTask(taskId: string, request: UpdateTaskRequest): void {
-    this.savingTaskId.set(taskId);
+    this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
     this.taskService.update(taskId, request).subscribe({
       next: () => {
-        this.savingTaskId.set(null);
-        this.editingTaskId.set(null);
+        this.isSubmitting.set(false);
+        this.closeForm();
+        this.notificationService.success('Task updated');
       },
       error: () => {
-        this.savingTaskId.set(null);
+        this.isSubmitting.set(false);
         this.errorMessage.set('Unable to update task.');
       }
     });
@@ -124,6 +157,7 @@ export class TaskListComponent implements OnChanges {
       next: () => {
         this.isDeleting.set(false);
         this.pendingDeletion.set(null);
+        this.notificationService.success(`Task “${task.title}” deleted`);
       },
       error: () => {
         this.isDeleting.set(false);

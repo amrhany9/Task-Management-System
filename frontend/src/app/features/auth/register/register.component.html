@@ -1,11 +1,14 @@
-<div class="mx-auto w-full max-w-sm">
+<div class="mx-auto w-full max-w-md">
   <div class="mb-8 text-center">
-    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Create your account</h1>
-    <p class="mt-1.5 text-sm text-slate-500">Start organising your work in a few seconds.</p>
+    <app-brand-mark class="mb-4" size="lg" />
+    <h1 class="text-2xl font-bold tracking-tight text-surface-900 sm:text-3xl dark:text-white">Create your account</h1>
+    <p class="mt-2 text-sm text-surface-500 dark:text-surface-400">
+      Start organising your work in a few seconds.
+    </p>
   </div>
 
-  <div class="card p-6 sm:p-8">
-    <form class="space-y-5" (ngSubmit)="submit()" #registerForm="ngForm">
+  <div class="card p-8">
+    <form class="space-y-4" (ngSubmit)="submit()" #registerForm="ngForm">
       <div>
         <label class="field-label" for="name">Name</label>
         <input
@@ -15,6 +18,7 @@
           class="field-input"
           placeholder="Jane Doe"
           [(ngModel)]="name"
+          [disabled]="isSubmitting()"
           required
           autocomplete="name"
         />
@@ -29,6 +33,7 @@
           class="field-input"
           placeholder="you@example.com"
           [(ngModel)]="email"
+          [disabled]="isSubmitting()"
           required
           autocomplete="email"
         />
@@ -43,6 +48,7 @@
           class="field-input"
           placeholder="At least 8 characters"
           [(ngModel)]="password"
+          [disabled]="isSubmitting()"
           required
           minlength="8"
           autocomplete="new-password"
@@ -50,17 +56,19 @@
       </div>
 
       @if (errorMessage()) {
-        <p class="alert-error">{{ errorMessage() }}</p>
+        <p class="alert-error" role="alert">{{ errorMessage() }}</p>
       }
 
-      <button type="submit" class="btn-primary w-full" [disabled]="registerForm.invalid || isSubmitting()">
-        {{ isSubmitting() ? 'Creating account…' : 'Create account' }}
-      </button>
+      <div class="pt-2">
+        <button type="submit" class="btn-primary w-full" [disabled]="registerForm.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Creating account…' : 'Create account' }}
+        </button>
+      </div>
     </form>
   </div>
 
-  <p class="mt-6 text-center text-sm text-slate-500">
+  <p class="mt-6 text-center text-sm text-surface-500 dark:text-surface-400">
     Already have an account?
-    <a class="font-medium text-indigo-600 hover:text-indigo-700" routerLink="/login">Log in</a>
+    <a class="ml-1 font-semibold text-primary-600 transition hover:text-primary-500" routerLink="/login">Log in</a>
   </p>
 </div>

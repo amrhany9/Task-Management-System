@@ -1,29 +1,30 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Project } from '../../../core/models/project.model';
+import { Project, UpdateProjectRequest } from '../../../core/models/project.model';
+import { NotificationService } from '../../../core/services/notification.service';
 import { ProjectService } from '../../../core/services/project.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { ModalComponent } from '../../../shared/modal/modal.component';
 import { TaskListComponent } from '../../tasks/task-list/task-list.component';
+import { ProjectFormComponent } from '../project-form/project-form.component';
 
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  imports: [FormsModule, RouterLink, TaskListComponent, ConfirmDialogComponent],
+  imports: [RouterLink, TaskListComponent, ConfirmDialogComponent, ModalComponent, ProjectFormComponent],
   templateUrl: './project-detail.component.html'
 })
 export class ProjectDetailComponent implements OnInit {
+  private readonly notificationService = inject(NotificationService);
+
   readonly project = signal<Project | null>(null);
   readonly errorMessage = signal<string | null>(null);
-  readonly isEditing = signal(false);
 
   readonly isLoading = signal(true);
+  readonly isEditOpen = signal(false);
   readonly isSaving = signal(false);
   readonly isConfirmingDelete = signal(false);
   readonly isDeleting = signal(false);
-
-  editName = '';
-  editDescription = '';
 
   private projectId = '';
 
@@ -40,8 +41,6 @@ export class ProjectDetailComponent implements OnInit {
       next: (project) => {
         this.isLoading.set(false);
         this.project.set(project);
-        this.editName = project.name;
-        this.editDescription = project.description;
       },
       error: () => {
         this.isLoading.set(false);
@@ -50,27 +49,24 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-  get isNameMissing(): boolean {
-    return !this.editName.trim();
+  openEdit(): void {
+    this.isEditOpen.set(true);
   }
 
-  startEditing(): void {
-    this.isEditing.set(true);
+  closeEdit(): void {
+    this.isEditOpen.set(false);
   }
 
-  saveProject(): void {
-    if (this.isNameMissing || this.isSaving()) {
-      return;
-    }
-
+  saveProject(request: UpdateProjectRequest): void {
     this.isSaving.set(true);
     this.errorMessage.set(null);
 
-    this.projectService.update(this.projectId, { name: this.editName, description: this.editDescription }).subscribe({
+    this.projectService.update(this.projectId, request).subscribe({
       next: (updated) => {
         this.isSaving.set(false);
+        this.isEditOpen.set(false);
         this.project.set(updated);
-        this.isEditing.set(false);
+        this.notificationService.success('Project updated');
       },
       error: () => {
         this.isSaving.set(false);
@@ -95,6 +91,7 @@ export class ProjectDetailComponent implements OnInit {
       next: () => {
         this.isDeleting.set(false);
         this.isConfirmingDelete.set(false);
+        this.notificationService.success('Project deleted');
         this.router.navigate(['/projects']);
       },
       error: () => {

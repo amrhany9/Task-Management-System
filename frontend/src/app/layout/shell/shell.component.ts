@@ -1,12 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { BrandMarkComponent } from '../../shared/brand-mark/brand-mark.component';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterLink, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, BrandMarkComponent],
   templateUrl: './shell.component.html'
 })
 export class ShellComponent {
@@ -34,8 +35,12 @@ export class ShellComponent {
     this.isMenuOpen.update((open) => !open);
   }
 
-  logout(): void {
+  closeMenu(): void {
     this.isMenuOpen.set(false);
+  }
+
+  logout(): void {
+    this.closeMenu();
     this.authService.logout();
     this.router.navigate(['/login']);
   }

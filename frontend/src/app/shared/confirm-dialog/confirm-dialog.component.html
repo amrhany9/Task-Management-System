@@ -1,9 +1,11 @@
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+  class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 sm:p-6"
   (click)="cancel.emit()"
 >
+  <div class="fixed inset-0 bg-surface-950/60 backdrop-blur-sm transition-opacity duration-200"></div>
+
   <div
-    class="card w-full max-w-sm p-6"
+    class="animate-fade-scale-in relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-surface-200/90 bg-white shadow-modal dark:border-surface-800 dark:bg-surface-900"
     role="alertdialog"
     aria-modal="true"
     aria-labelledby="confirm-dialog-title"
@@ -11,14 +13,21 @@
     (click)="$event.stopPropagation()"
     (keydown.escape)="cancel.emit()"
   >
-    <h2 id="confirm-dialog-title" class="text-base font-semibold text-slate-900 dark:text-slate-100">
-      {{ title }}
-    </h2>
-    <p id="confirm-dialog-message" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-      {{ message }}
-    </p>
+    <div
+      class="flex items-center justify-between gap-4 border-b border-l-4 border-surface-100 border-l-rose-600 bg-surface-50/50 px-6 py-5 dark:border-surface-800 dark:border-l-rose-600 dark:bg-surface-800/30"
+    >
+      <h2 id="confirm-dialog-title" class="text-base font-bold tracking-tight text-surface-900 sm:text-lg dark:text-surface-100">
+        {{ title }}
+      </h2>
+    </div>
 
-    <div class="mt-6 flex justify-end gap-2">
+    <div class="p-6 sm:p-8">
+      <p id="confirm-dialog-message" class="text-sm text-surface-600 dark:text-surface-300">
+        {{ message }}
+      </p>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 border-t border-surface-100 px-6 py-4 sm:px-8 dark:border-surface-800">
       <button type="button" class="btn-secondary" [disabled]="isBusy" (click)="cancel.emit()">
         {{ cancelLabel }}
       </button>
