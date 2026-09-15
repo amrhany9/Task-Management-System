@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TaskManagement.API.Data;
+using TaskManagement.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace TaskManagement.API.Migrations
+namespace TaskManagement.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TaskManagementDbContext))]
     partial class TaskManagementDbContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace TaskManagement.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TaskManagement.API.Entities.Project", b =>
+            modelBuilder.Entity("TaskManagement.Domain.Entities.Project", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +49,7 @@ namespace TaskManagement.API.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("TaskManagement.API.Entities.TaskItem", b =>
+            modelBuilder.Entity("TaskManagement.Domain.Entities.TaskItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +93,7 @@ namespace TaskManagement.API.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("TaskManagement.API.Entities.User", b =>
+            modelBuilder.Entity("TaskManagement.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,9 +126,9 @@ namespace TaskManagement.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("TaskManagement.API.Entities.Project", b =>
+            modelBuilder.Entity("TaskManagement.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("TaskManagement.API.Entities.User", "Owner")
+                    b.HasOne("TaskManagement.Domain.Entities.User", "Owner")
                         .WithMany("Projects")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -137,14 +137,14 @@ namespace TaskManagement.API.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("TaskManagement.API.Entities.TaskItem", b =>
+            modelBuilder.Entity("TaskManagement.Domain.Entities.TaskItem", b =>
                 {
-                    b.HasOne("TaskManagement.API.Entities.User", "Assignee")
+                    b.HasOne("TaskManagement.Domain.Entities.User", "Assignee")
                         .WithMany("AssignedTasks")
                         .HasForeignKey("AssigneeId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("TaskManagement.API.Entities.Project", "Project")
+                    b.HasOne("TaskManagement.Domain.Entities.Project", "Project")
                         .WithMany("Tasks")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -155,12 +155,12 @@ namespace TaskManagement.API.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("TaskManagement.API.Entities.Project", b =>
+            modelBuilder.Entity("TaskManagement.Domain.Entities.Project", b =>
                 {
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("TaskManagement.API.Entities.User", b =>
+            modelBuilder.Entity("TaskManagement.Domain.Entities.User", b =>
                 {
                     b.Navigation("AssignedTasks");
 
